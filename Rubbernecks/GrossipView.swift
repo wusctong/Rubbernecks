@@ -15,20 +15,20 @@ var userList: [String: User] = [
     "little_onion": User(name: "葱葱", age: 14, showage: true, profile: .littleOnion, realName: "吴葱"),
     "grandma_qian": User(name:"吔炫奶奶", age: 77, showage: false, profile: .grandmaQian, realName: "钱吔炫")
 ]
-var grossipBoardView: [Board] = [
+var grossipBoardList: [Board] = [
     Board(user: userList["old_weitong"]!, title: "0702的小孩竟然喜欢洗碗", content: "我昨天去他们家做客，听到孩子说：“拔拔，我要洗碗，我爱洗碗！”我惊得大彻大悟，下巴掉在了地上！\n现在的年轻人真是奇怪额……", color: .accentColor),
     Board(user: userList["little_onion"]!, title: "我画的小狗狗活了！！！", content: "我画了条小狗，没想到活了；随手拍了下来，没想到火了；不小心点到了流量加成，又一不小心画了114514元买了1145140次观看，啊哈哈哈好荒谬。", color: .mint),
     Board(user: userList["grandma_qian"]!, title: "课间操有大问题！！！", content: "课间操的动作一会向右，一会向左，容易把人绕晕！！！建议改版！！！人在做，天在看！不要胡作非为！", color: .yellow)
 ]
 var boardCommentList: [Board: [Comment]] = [
-    grossipBoardView[0]: [
+    grossipBoardList[0]: [
         Comment(user: userList["grandma_qian"], content: "哇哦，这么神奇的吗？！"),
         Comment(user: userList["grandma_qian"], content: "好奇怪啊。。。"),
         Comment(user: userList["little_onion"], content: "好神奇，竟然不喜欢画画？"),
         Comment(user: userList["old_weitong"], content: "看不懂斯密达"),
         Comment(user: userList["old_weitong"], content: "VERY SDLANGE~")],
-    grossipBoardView[1]: [],
-    grossipBoardView[2]: []
+    grossipBoardList[1]: [],
+    grossipBoardList[2]: []
 ]
 
 let PROFILE_SCALE: CGFloat = 40
@@ -69,27 +69,47 @@ struct GrossipView: View {
     @State private var tmpGrossipTitle: String = ""
     @State private var tmpGrossipContent: String = ""
     @State private var tmpGrossipColor: Color = .pink
+    @State private var isSent: Bool = false
+    
+    @State private var refreshViewId = Date().timeIntervalSince1970
     
     // Body
     var body: some View {
-        GrossipInput()
+        GrossipList()
     }
     
     
     func GrossipInput() -> some View {
         VStack {
+            TextField("标题", text: $tmpGrossipTitle).font(.largeTitle).bold().padding(5)
+                .overlay(content: {
+                    RoundedRectangle(cornerRadius: 15).stroke(tmpGrossipColor, lineWidth: 2)
+            })
             HStack {
-                TextField("标题", text: $tmpGrossipTitle).font(.largeTitle).bold().padding(5)
-                    .overlay(content: {
-                        RoundedRectangle(cornerRadius: 15).stroke(.accent, lineWidth: 2)
+                ColorPicker(selection: $tmpGrossipColor, label: {
+                    Text("八卦板颜色").font(.title).foregroundStyle(tmpGrossipColor)
                 })
-                Text("发布").font(.title).bold().padding(.vertical, 10).padding(.horizontal, 30)
+                Spacer()
+                Text("发布").font(.title).bold().padding(.vertical, 10).padding(.horizontal, 30).alert(Text("已发布"), isPresented: $isSent, actions: {})
                     .overlay(content: {
-                    RoundedRectangle(cornerRadius: 15).fill(.accent)
+                    RoundedRectangle(cornerRadius: 15).fill(tmpGrossipColor)
                     Text("发布").font(.title).bold().foregroundStyle(.white)
                 })
+                    .onTapGesture {
+                        grossipBoardList.append(Board(title: tmpGrossipTitle, content: tmpGrossipContent, color: tmpGrossipColor))
+                        tmpGrossipTitle = ""
+                        tmpGrossipContent = ""
+                        tmpGrossipColor = .pink
+                        isSent = true
+                        
+                        refresh()
+                    }
             }
-        }
+            TextEditor(text: $tmpGrossipContent).padding(5)
+                .overlay(content: {
+                    RoundedRectangle(cornerRadius: 15).stroke(tmpGrossipColor, lineWidth: 2)
+                })
+        }.id(refreshViewId)
     }
     
     // The main list of grossip boards.
@@ -98,9 +118,18 @@ struct GrossipView: View {
             HStack {
                 Text("八卦区").font(.largeTitle).bold()
                 Spacer()
+                NavigationLink {
+                    GrossipInput().padding(.horizontal, 20)
+                } label: {
+                    Image(systemName: "plus.app").imageScale(.large).padding(.vertical, 10).padding(.horizontal, 30)
+                        .overlay(content: {
+                        RoundedRectangle(cornerRadius: 15).fill(tmpGrossipColor)
+                        Image(systemName: "plus.app").imageScale(.large).foregroundStyle(.white)
+                    })
+                }
             }.padding(.horizontal, 20).padding(.top, 20)
             SwiftUI.ScrollView {
-                ForEach(boardList) { board in
+                ForEach(boardList.reversed()) { board in
                     NavigationLink {
                         GrossipDetail(board: board)
                     } label: {
@@ -223,10 +252,15 @@ struct GrossipView: View {
             }
         }.clipShape(RoundedRectangle(cornerRadius: 15))
     }
+    
+    
+    func refresh() {
+        refreshViewId = Date().timeIntervalSince1970
+    }
 }
 
 #Preview {
-    GrossipView(boardList: grossipBoardView)
+    GrossipView(boardList: grossipBoardList)
     // GrossipView().BasicGrossipDetail(board: grossip_board_list[0], profile_scale: PROFILE_SCALE)
     // GrossipView().CommentInput(targetBoard: grossip_board_list[0])
 }
