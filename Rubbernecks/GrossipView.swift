@@ -121,7 +121,7 @@ struct GrossipView: View {
             } label: {
                 BasicGrossipBoard(board: board).frame(height: 250)
             }.foregroundStyle(.black)
-        } // .toolbar(is_in_comment ? .hidden : .visible)
+        }
     }
     
     // Detail of a single grossip
