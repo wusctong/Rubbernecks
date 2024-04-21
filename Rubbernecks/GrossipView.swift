@@ -139,7 +139,7 @@ struct GrossipView: View {
             }.padding(.horizontal, 20)
         } detail: {
             Text("去看看")
-        }
+        }.id(refreshViewId)
     }
     
     // A grossip board with a comment view.
