@@ -68,7 +68,7 @@ struct GrossipView: View {
     
     @State private var tmpGrossipTitle: String = ""
     @State private var tmpGrossipContent: String = ""
-    // @State var is_in_comment: Bool = false
+    @State private var tmpGrossipColor: Color = .pink
     
     // Body
     var body: some View {
@@ -79,10 +79,14 @@ struct GrossipView: View {
     func GrossipInput() -> some View {
         VStack {
             HStack {
-                TextField("标题", text: $tmpGrossipTitle)
-                Image("bubble.left").imageScale(.large).padding(.vertical, 10).padding(.horizontal, 30).overlay(content: {
+                TextField("标题", text: $tmpGrossipTitle).font(.largeTitle).bold().padding(5)
+                    .overlay(content: {
+                        RoundedRectangle(cornerRadius: 15).stroke(.accent, lineWidth: 2)
+                })
+                Text("发布").font(.title).bold().padding(.vertical, 10).padding(.horizontal, 30)
+                    .overlay(content: {
                     RoundedRectangle(cornerRadius: 15).fill(.accent)
-                    Image("bubble.left").imageScale(.large).foregroundStyle(.white)
+                    Text("发布").font(.title).bold().foregroundStyle(.white)
                 })
             }
         }
