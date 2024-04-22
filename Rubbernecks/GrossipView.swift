@@ -16,7 +16,7 @@ var userList: [String: User] = [
     "grandma_qian": User(name:"吔炫奶奶", age: 77, showage: false, profile: .grandmaQian, realName: "钱吔炫")
 ]
 var grossipBoardList: [Board] = [
-    Board(user: userList["old_weitong"]!, title: "0702的小孩竟然喜欢洗碗", content: "我昨天去他们家做客，听到孩子说：“拔拔，我要洗碗，我爱洗碗！”我惊得大彻大悟，下巴掉在了地上！\n现在的年轻人真是奇怪额……", color: .accentColor),
+    Board(user: userList["old_weitong"]!, title: "0702的小孩竟然喜欢洗碗", content: "我昨天去他们家做客，听到孩子说：“拔拔，我要洗碗，我爱洗碗！”我惊得大彻大悟，下巴掉在了地上！\n现在的年轻人真是奇怪额……", color: .teal),
     Board(user: userList["little_onion"]!, title: "我画的小狗狗活了！！！", content: "我画了条小狗，没想到活了；随手拍了下来，没想到火了；不小心点到了流量加成，又一不小心画了114514元买了1145140次观看，啊哈哈哈好荒谬。", color: .mint),
     Board(user: userList["grandma_qian"]!, title: "课间操有大问题！！！", content: "课间操的动作一会向右，一会向左，容易把人绕晕！！！建议改版！！！人在做，天在看！不要胡作非为！", color: .yellow)
 ]
@@ -61,16 +61,19 @@ struct Comment: Hashable, Identifiable {
 
 // Groosip View
 struct GrossipView: View {
-    var boardList: [Board]
+    @State var boardList: [Board]
+    @State var commentMapping: [Board: [Comment]]
     
     @State private var tmpComment: String = ""
     @FocusState private var commentInputIsFocused: Bool
     
+    @State var tmpGrossipBoard: Board = Board(user: currentUser, title: "", content: "")
     @State private var tmpGrossipTitle: String = ""
     @State private var tmpGrossipContent: String = ""
     @State private var tmpGrossipColor: Color = .pink
     @State private var isSent: Bool = false
     
+    @State private var isRefreshed: Bool = false
     @State private var refreshViewId = Date().timeIntervalSince1970
     
     // Body
@@ -90,16 +93,25 @@ struct GrossipView: View {
                     Text("八卦板颜色").font(.title).foregroundStyle(tmpGrossipColor)
                 })
                 Spacer()
-                Text("发布").font(.title).bold().padding(.vertical, 10).padding(.horizontal, 30).alert(Text("已发布"), isPresented: $isSent, actions: {})
+                Text("发布").font(.title).bold().padding(.vertical, 10).padding(.horizontal, 30)
+                    .alert(isPresented: $isSent) {
+                        Alert(title: Text("已发布"), message: Text("已发布八卦"), dismissButton: Alert.Button.default(Text("知道了"), action: {
+                            isSent = false
+                        }))
+                    }
                     .overlay(content: {
                     RoundedRectangle(cornerRadius: 15).fill(tmpGrossipColor)
                     Text("发布").font(.title).bold().foregroundStyle(.white)
-                })
+                    })
                     .onTapGesture {
-                        grossipBoardList.append(Board(title: tmpGrossipTitle, content: tmpGrossipContent, color: tmpGrossipColor))
+                        tmpGrossipBoard = Board(user: currentUser, title: tmpGrossipTitle, content: tmpGrossipContent, color: tmpGrossipColor)
+                        boardList.append(tmpGrossipBoard)
+                        commentMapping[tmpGrossipBoard] = []
+                        
                         tmpGrossipTitle = ""
                         tmpGrossipContent = ""
                         tmpGrossipColor = .pink
+                        
                         isSent = true
                     }
             }
@@ -116,10 +128,24 @@ struct GrossipView: View {
             HStack {
                 Text("八卦区").font(.largeTitle).bold()
                 Spacer()
+                Image(systemName: "plus.app").imageScale(.large).padding(.horizontal, 20).padding(.vertical, 10)
+                    .overlay(content: {
+                        RoundedRectangle(cornerRadius: 15).fill(.accent)
+                        Text("刷新").font(.title3).fontWeight(.medium).foregroundStyle(.white)
+                    })
+                    .alert(isPresented: $isRefreshed) {
+                        Alert(title: Text("已刷新"), message: Text("去看看八卦吧"), dismissButton: Alert.Button.default(Text("好的呢"), action: {
+                            isRefreshed = false
+                        }))
+                    }
+                    .onTapGesture {
+                        refresh()
+                        isRefreshed = true
+                    }
                 NavigationLink {
                     GrossipInput().padding(.horizontal, 20)
                 } label: {
-                    Image(systemName: "plus.app").imageScale(.large).padding(.vertical, 10).padding(.horizontal, 30)
+                    Image(systemName: "plus.app").imageScale(.large).padding(.horizontal, 30).padding(.vertical, 10)
                         .overlay(content: {
                         RoundedRectangle(cornerRadius: 15).fill(tmpGrossipColor)
                         Image(systemName: "plus.app").imageScale(.large).foregroundStyle(.white)
@@ -133,11 +159,11 @@ struct GrossipView: View {
                     } label: {
                         BasicGrossipBoard(board: board).frame(height: BOARD_HEIGHT).padding(.vertical, 5)
                     }.foregroundStyle(.black)
-                }
+                }.id(refreshViewId)
             }.padding(.horizontal, 20)
         } detail: {
             Text("去看看")
-        }.id(refreshViewId)
+        }
     }
     
     // A grossip board with a comment view.
@@ -159,7 +185,7 @@ struct GrossipView: View {
                 Text("瓜子云").font(.title2).bold().multilineTextAlignment(.leading).padding(.leading, 20)
                 Spacer()
             }
-            CommentList(comments: boardCommentList[board]!, profile_scale: PROFILE_SCALE).padding(.horizontal, 20)
+            CommentList(comments: commentMapping[board]!, profile_scale: PROFILE_SCALE).padding(.horizontal, 20)
             CommentInput(targetBoard: board).padding([.horizontal, .bottom], 20)
         }
     }
@@ -194,7 +220,7 @@ struct GrossipView: View {
                 RoundedRectangle(cornerRadius: 10).fill(.clear).stroke(.accent, lineWidth: 2)
             }).focused($commentInputIsFocused)
             Button(action: {
-                boardCommentList[targetBoard]!.append(Comment(user: currentUser, content: tmpComment))
+                commentMapping[targetBoard]!.append(Comment(user: currentUser, content: tmpComment))
                 tmpComment = ""
             }, label: {
                 Text("发送").font(.title2).padding(.vertical, 11.5).padding(.horizontal, 20).overlay(content: {
@@ -258,7 +284,7 @@ struct GrossipView: View {
 }
 
 #Preview {
-    GrossipView(boardList: grossipBoardList)
+    GrossipView(boardList: grossipBoardList, commentMapping: commentMapping)
     // GrossipView().BasicGrossipDetail(board: grossip_board_list[0], profile_scale: PROFILE_SCALE)
     // GrossipView().CommentInput(targetBoard: grossip_board_list[0])
 }

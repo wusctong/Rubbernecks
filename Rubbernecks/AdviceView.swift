@@ -58,7 +58,7 @@ struct SingleAdviceBoardView: View {
                             Spacer(minLength: 0)
                         }
                     }
-                }.frame(height: isOpened ? 200 + 17 * CGFloat(adviceBoard.content.count) / 14 : 60).padding(5)
+                }.frame(height: isOpened ? 160 + 17 * CGFloat(adviceBoard.content.count) / 14 : 60).padding(5)
             }
         }.frame(height: isOpened ? 350 + 17 * CGFloat(adviceBoard.content.count) / 14 : 245).clipShape(RoundedRectangle(cornerRadius: 15))
     }
