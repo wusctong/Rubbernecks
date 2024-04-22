@@ -192,11 +192,11 @@ struct GrossipView: View {
     
     func BasicGrossipDetail(board: Board, profile_scale: CGFloat) -> some View {
         VStack {
-            Text(board.title).font(.title).bold()
+            Text(board.title).font(.title).bold().multilineTextAlignment(.leading)
             HStack {
                 Image(board.user.profile).resizable().frame(width: profile_scale, height: profile_scale).clipShape(Circle())
                 HStack {
-                    Text("@" + board.user.name).font(.title2).lineLimit(1).bold()
+                    Text("@" + board.user.name).font(.title2).lineLimit(1).bold().multilineTextAlignment(.leading)
                     Spacer()
                 }
             }.padding(.horizontal, 20)
