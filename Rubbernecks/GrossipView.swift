@@ -20,7 +20,7 @@ var grossipBoardList: [Board] = [
     Board(user: userList["little_onion"]!, title: "我画的小狗狗活了！！！", content: "我画了条小狗，没想到活了；随手拍了下来，没想到火了；不小心点到了流量加成，又一不小心画了114514元买了1145140次观看，啊哈哈哈好荒谬。", color: .mint),
     Board(user: userList["grandma_qian"]!, title: "课间操有大问题！！！", content: "课间操的动作一会向右，一会向左，容易把人绕晕！！！建议改版！！！人在做，天在看！不要胡作非为！", color: .yellow)
 ]
-var boardCommentList: [Board: [Comment]] = [
+var grossipCommentList: [Board: [Comment]] = [
     grossipBoardList[0]: [
         Comment(user: userList["grandma_qian"], content: "哇哦，这么神奇的吗？！"),
         Comment(user: userList["grandma_qian"], content: "好奇怪啊。。。"),
@@ -284,7 +284,7 @@ struct GrossipView: View {
 }
 
 #Preview {
-    GrossipView(boardList: grossipBoardList, commentMapping: commentMapping)
+    GrossipView(boardList: grossipBoardList, commentMapping: grossipCommentList)
     // GrossipView().BasicGrossipDetail(board: grossip_board_list[0], profile_scale: PROFILE_SCALE)
     // GrossipView().CommentInput(targetBoard: grossip_board_list[0])
 }

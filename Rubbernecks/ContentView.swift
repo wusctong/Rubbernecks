@@ -20,7 +20,7 @@ struct ContentView: View {
     // Menu which navigates to different views.
     func NavigationMenu() -> some View {
         TabView {
-            GrossipView(boardList: grossipBoardList).tabItem {
+            GrossipView(boardList: grossipBoardList, commentMapping: grossipCommentList).tabItem {
                 Image(systemName: "bubble.left")
                 Text("八卦区")
             }
