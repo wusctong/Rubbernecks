@@ -101,8 +101,6 @@ struct GrossipView: View {
                         tmpGrossipContent = ""
                         tmpGrossipColor = .pink
                         isSent = true
-                        
-                        refresh()
                     }
             }
             TextEditor(text: $tmpGrossipContent).padding(5)
