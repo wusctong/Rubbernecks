@@ -24,7 +24,7 @@ struct ContentView: View {
                 Image(systemName: "bubble.left")
                 Text("八卦区")
             }
-            AdviceView(boardList: adviceBoardList).tabItem {
+            AdviceView(boardList: adviceBoardList, voteMapping: adviceVoteList).tabItem {
                 Image(systemName: "bubble.left")
                 Text("建议区")
             }

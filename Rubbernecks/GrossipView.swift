@@ -90,7 +90,7 @@ struct GrossipView: View {
             })
             HStack {
                 ColorPicker(selection: $tmpGrossipColor, label: {
-                    Text("八卦板颜色").font(.title).foregroundStyle(tmpGrossipColor)
+                    Text("八卦板颜色").font(.title2).foregroundStyle(tmpGrossipColor)
                 })
                 Spacer()
                 Text("发布").font(.title).bold().padding(.vertical, 10).padding(.horizontal, 30)
