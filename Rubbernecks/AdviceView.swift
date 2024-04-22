@@ -9,11 +9,9 @@ import SwiftUI
 
 
 
-var adviceBoardList: [AdviceBoard] = [ AdviceBoard(user: userList["little_onion"]!, title: "垃圾站周围太脏、太臭了！", content: "上周末我去倒垃圾，天呐！看守的人不知所踪，垃圾堆满地，太可怕了！！！", color: .teal, statement: 2), AdviceBoard(user: userList["grandma_qian"]!, title: "电梯里有人乱扔垃圾吔！", content: "每天晚上坐电梯，都能看到一个垃圾袋在电梯间里！太恶心了。希望物业能改善一下，谢谢。", color: .mint, statement: 0) ]
-
-var adviceVoteList: [AdviceBoard: Int] = [
-    adviceBoardList[0]: 5,
-    adviceBoardList[1]: 3
+var adviceBoardList: [AdviceBoard] = [
+    AdviceBoard(user: userList["little_onion"]!, title: "垃圾站周围太脏、太臭了！", content: "上周末我去倒垃圾，天呐！看守的人不知所踪，垃圾堆满地，太可怕了！！！", color: .teal, statement: 2, vote: 5),
+    AdviceBoard(user: userList["grandma_qian"]!, title: "电梯里有人乱扔垃圾吔！", content: "每天晚上坐电梯，都能看到一个垃圾袋在电梯间里！太恶心了。希望物业能改善一下，谢谢。", color: .mint, statement: 0, vote: 3)
 ]
 
 let STATEMENT_DESCRIBE: [String] = ["正在审阅中", "审阅完毕", "正在调查中", "调查完毕", "已解决"]
@@ -27,13 +25,16 @@ struct AdviceBoard: Hashable, Identifiable {
     var title: String
     var content: String
     var color = Color.pink
+    
     var statement: Int
+    var vote: Int
 }
 
 struct SingleAdviceBoardView: View {
-    var adviceBoard: AdviceBoard
+    @State var adviceBoard: AdviceBoard
     
     @State private var isOpened: Bool = false
+    @State private var isVoted: Bool = false
     
     var body: some View {
         ZStack {
@@ -53,7 +54,26 @@ struct SingleAdviceBoardView: View {
                         }
                     }
                 ZStack {
-                    RoundedRectangle(cornerRadius: 13).fill(.white.opacity(0.35))
+                    RoundedRectangle(cornerRadius: 13).fill(.white.opacity(0.3)).frame(height: isOpened ? 90 : 70)
+                    HStack {
+                        Text("热度：").font(.title3).fontWeight(.regular)
+                        Text("\(adviceBoard.vote)").contentTransition(.numericText()).font(.largeTitle).bold()
+                        Spacer()
+                        Image(systemName: "suit.heart").imageScale(.large).scaleEffect(10).padding(.horizontal, 30).padding(.vertical, 10)
+                            .overlay(content: {
+                                RoundedRectangle(cornerRadius: 11).fill(adviceBoard.color)
+                                Image(systemName: isVoted ? "suit.heart.fill" : "suit.heart").imageScale(.large).foregroundStyle(.white)
+                            })
+                            .onTapGesture {
+                                isVoted.toggle()
+                                withAnimation(.bouncy) {
+                                    adviceBoard.vote += isVoted ? 1 : -1
+                                }
+                            }
+                    }.offset(y: 1).padding(20)
+                }.frame(height: isOpened ? 90 : 70).padding(.horizontal, 5)
+                ZStack {
+                    RoundedRectangle(cornerRadius: 13).fill(.white.opacity(0.35)).frame(height: isOpened ? 160 + 17 * CGFloat(adviceBoard.content.count) / 14 : 70)
                     VStack {
                         HStack {
                             Text("状态：" + STATEMENT_DESCRIBE[adviceBoard.statement]).bold().font(.title3).padding(5)
@@ -64,17 +84,16 @@ struct SingleAdviceBoardView: View {
                             Spacer(minLength: 0)
                         }
                     }
-                }.frame(height: isOpened ? 160 + 17 * CGFloat(adviceBoard.content.count) / 14 : 60).padding(5)
+                }.frame(height: isOpened ? 160 + 17 * CGFloat(adviceBoard.content.count) / 14 : 70).padding(5)
             }
-        }.frame(height: isOpened ? 350 + 17 * CGFloat(adviceBoard.content.count) / 14 : 245).clipShape(RoundedRectangle(cornerRadius: 15))
+        }.frame(height: isOpened ? 100 + 350 + 17 * CGFloat(adviceBoard.content.count) / 14 : 265 + 70).clipShape(RoundedRectangle(cornerRadius: 15))
     }
 }
 
 struct AdviceView: View {
     @State var boardList: [AdviceBoard]
-    @State var voteMapping: [AdviceBoard: Int]
     
-    @State var tmpAdviceBoard: AdviceBoard = AdviceBoard(user: currentUser, title: "", content: "", statement: 0)
+    @State var tmpAdviceBoard: AdviceBoard = AdviceBoard(user: currentUser, title: "", content: "", statement: 0, vote: 0)
     @State private var tmpAdviceTitle: String = ""
     @State private var tmpAdviceContent: String = ""
     @State private var tmpAdviceColor: Color = .pink
@@ -110,9 +129,8 @@ struct AdviceView: View {
                     Text("发布").font(.title).bold().foregroundStyle(.white)
                     })
                     .onTapGesture {
-                        tmpAdviceBoard = AdviceBoard(user: currentUser, title: tmpAdviceTitle, content: tmpAdviceContent, color: tmpAdviceColor, statement: 0)
+                        tmpAdviceBoard = AdviceBoard(user: currentUser, title: tmpAdviceTitle, content: tmpAdviceContent, color: tmpAdviceColor, statement: 0, vote: 0)
                         boardList.append(tmpAdviceBoard)
-                        voteMapping[tmpAdviceBoard] = 0
                         
                         tmpAdviceTitle = ""
                         tmpAdviceContent = ""
@@ -180,5 +198,5 @@ struct AdviceView: View {
 
 #Preview {
     // SingleAdviceBoardView(adviceBoard: adviceBoardList[0])
-    AdviceView(boardList: adviceBoardList, voteMapping: adviceVoteList)
+    AdviceView(boardList: adviceBoardList)
 }
