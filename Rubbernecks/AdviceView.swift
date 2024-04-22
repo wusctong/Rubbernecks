@@ -59,34 +59,34 @@ struct SingleAdviceBoardView: View {
                         Text("热度：").font(.title3).fontWeight(.regular)
                         Text("\(adviceBoard.vote)").contentTransition(.numericText()).font(.largeTitle).bold()
                         Spacer()
-                        Image(systemName: "suit.heart").imageScale(.large).scaleEffect(10).padding(.horizontal, 30).padding(.vertical, 10)
+                        Image(systemName: "suit.heart").imageScale(.large).padding(.horizontal, 30).padding(.vertical, 10)
                             .overlay(content: {
                                 RoundedRectangle(cornerRadius: 11).fill(adviceBoard.color)
-                                Image(systemName: isVoted ? "suit.heart.fill" : "suit.heart").imageScale(.large).foregroundStyle(.white)
+                                Image(systemName: isVoted ? "suit.heart.fill" : "suit.heart").imageScale(.large).scaleEffect(isVoted ? 1.4 : 1).foregroundStyle(.white)
                             })
                             .onTapGesture {
-                                isVoted.toggle()
                                 withAnimation(.bouncy) {
+                                    isVoted.toggle()
                                     adviceBoard.vote += isVoted ? 1 : -1
                                 }
                             }
                     }.offset(y: 1).padding(20)
                 }.frame(height: isOpened ? 90 : 70).padding(.horizontal, 5)
                 ZStack {
-                    RoundedRectangle(cornerRadius: 13).fill(.white.opacity(0.35)).frame(height: isOpened ? 160 + 17 * CGFloat(adviceBoard.content.count) / 14 : 70)
+                    RoundedRectangle(cornerRadius: 13).fill(.white.opacity(0.35)).frame(height: isOpened ? 126 + 20 * CGFloat(adviceBoard.content.count) / 16 : 82)
                     VStack {
                         HStack {
-                            Text("状态：" + STATEMENT_DESCRIBE[adviceBoard.statement]).bold().font(.title3).padding(5)
+                            Text("状态：" + STATEMENT_DESCRIBE[adviceBoard.statement]).bold().font(.title3)
                             Spacer()
-                        }
+                        }.padding(.bottom, isOpened ? 20 : 10)
                         HStack {
-                            Text(adviceBoard.content).font(.title3).padding(5)
+                            Text(adviceBoard.content).font(.title3)
                             Spacer(minLength: 0)
                         }
-                    }
-                }.frame(height: isOpened ? 160 + 17 * CGFloat(adviceBoard.content.count) / 14 : 70).padding(5)
+                    }.padding(5)
+                }.frame(height: isOpened ? 126 + 17 * CGFloat(adviceBoard.content.count) / 14 : 82).padding(.horizontal, 5)
             }
-        }.frame(height: isOpened ? 100 + 350 + 17 * CGFloat(adviceBoard.content.count) / 14 : 265 + 70).clipShape(RoundedRectangle(cornerRadius: 15))
+        }.frame(height: isOpened ? 100 + 295 + 17 * CGFloat(adviceBoard.content.count) / 14 : 260 + 70).clipShape(RoundedRectangle(cornerRadius: 15))
     }
 }
 
@@ -120,7 +120,7 @@ struct AdviceView: View {
                 Spacer()
                 Text("发布").font(.title).bold().padding(.vertical, 10).padding(.horizontal, 30)
                     .alert(isPresented: $isSent) {
-                        Alert(title: Text("已发布"), message: Text("已发布建议"), dismissButton: Alert.Button.default(Text("知道了"), action: {
+                        Alert(title: Text("已发布"), message: Text("已发布建议"), dismissButton: Alert.Button.default(Text("好的"), action: {
                             isSent = false
                         }))
                     }
@@ -159,7 +159,7 @@ struct AdviceView: View {
                             Text("刷新").font(.title3).fontWeight(.medium).foregroundStyle(.white)
                         })
                         .alert(isPresented: $isRefreshed) {
-                            Alert(title: Text("已刷新"), message: Text("去看看建议吧"), dismissButton: Alert.Button.default(Text("好的呢"), action: {
+                            Alert(title: Text("已刷新"), message: Text("去看看建议吧"), dismissButton: Alert.Button.default(Text("好的"), action: {
                                 isRefreshed = false
                             }))
                         }

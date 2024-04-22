@@ -72,6 +72,7 @@ struct GrossipView: View {
     @State private var tmpGrossipContent: String = ""
     @State private var tmpGrossipColor: Color = .pink
     @State private var isSent: Bool = false
+    @State private var isBadBoard: Bool = false
     
     @State private var isRefreshed: Bool = false
     @State private var refreshViewId = Date().timeIntervalSince1970
@@ -92,27 +93,35 @@ struct GrossipView: View {
                 ColorPicker(selection: $tmpGrossipColor, label: {
                     Text("八卦板颜色").font(.title2).foregroundStyle(tmpGrossipColor)
                 })
-                Spacer()
+                Spacer().alert(isPresented: $isBadBoard) {
+                    Alert(title: Text("发布错误"), message: Text("填写信息缺失"), dismissButton: Alert.Button.default(Text("继续编辑"), action: {
+                        isBadBoard = false
+                    }))
+                }
+                Spacer().alert(isPresented: $isSent) {
+                    Alert(title: Text("已发布"), message: Text("已发布八卦"), dismissButton: Alert.Button.default(Text("好的"), action: {
+                        isSent = false
+                    }))
+                }
                 Text("发布").font(.title).bold().padding(.vertical, 10).padding(.horizontal, 30)
-                    .alert(isPresented: $isSent) {
-                        Alert(title: Text("已发布"), message: Text("已发布八卦"), dismissButton: Alert.Button.default(Text("知道了"), action: {
-                            isSent = false
-                        }))
-                    }
                     .overlay(content: {
                     RoundedRectangle(cornerRadius: 15).fill(tmpGrossipColor)
                     Text("发布").font(.title).bold().foregroundStyle(.white)
                     })
                     .onTapGesture {
-                        tmpGrossipBoard = Board(user: currentUser, title: tmpGrossipTitle, content: tmpGrossipContent, color: tmpGrossipColor)
-                        boardList.append(tmpGrossipBoard)
-                        commentMapping[tmpGrossipBoard] = []
-                        
-                        tmpGrossipTitle = ""
-                        tmpGrossipContent = ""
-                        tmpGrossipColor = .pink
-                        
-                        isSent = true
+                        if tmpGrossipTitle == "" || tmpGrossipContent == "" {
+                            isBadBoard = true
+                        } else {
+                            tmpGrossipBoard = Board(user: currentUser, title: tmpGrossipTitle, content: tmpGrossipContent, color: tmpGrossipColor)
+                            boardList.append(tmpGrossipBoard)
+                            commentMapping[tmpGrossipBoard] = []
+                            
+                            tmpGrossipTitle = ""
+                            tmpGrossipContent = ""
+                            tmpGrossipColor = .pink
+                            
+                            isSent = true
+                        }
                     }
             }
             TextEditor(text: $tmpGrossipContent).padding(5)
@@ -134,7 +143,7 @@ struct GrossipView: View {
                         Text("刷新").font(.title3).fontWeight(.medium).foregroundStyle(.white)
                     })
                     .alert(isPresented: $isRefreshed) {
-                        Alert(title: Text("已刷新"), message: Text("去看看八卦吧"), dismissButton: Alert.Button.default(Text("好的呢"), action: {
+                        Alert(title: Text("已刷新"), message: Text("去看看八卦吧"), dismissButton: Alert.Button.default(Text("好的"), action: {
                             isRefreshed = false
                         }))
                     }
