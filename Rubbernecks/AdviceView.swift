@@ -39,7 +39,7 @@ struct SingleAdviceBoardView: View {
     var body: some View {
         ZStack {
             Rectangle().fill(adviceBoard.color)
-            VStack {
+            VStack(alignment: .leading) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 13).fill(adviceBoard.color).padding(5)
                     HStack {
@@ -197,6 +197,6 @@ struct AdviceView: View {
 }
 
 #Preview {
-    // SingleAdviceBoardView(adviceBoard: adviceBoardList[0])
+    /// SingleAdviceBoardView(adviceBoard: adviceBoardList[0])
     AdviceView(boardList: adviceBoardList)
 }

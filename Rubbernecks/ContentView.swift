@@ -9,7 +9,7 @@ import SwiftUI
 
 
 
-// Main View
+/// Main View
 struct ContentView: View {
     // Body
     var body: some View {
@@ -17,7 +17,7 @@ struct ContentView: View {
     }
 
     
-    // Menu which navigates to different views.
+    /// Menu which navigates to different views.
     func NavigationMenu() -> some View {
         TabView {
             GrossipView(boardList: grossipBoardList, commentMapping: grossipCommentList).tabItem {

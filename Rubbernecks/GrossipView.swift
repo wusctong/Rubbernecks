@@ -9,7 +9,7 @@ import SwiftUI
 
 
 
-// Data
+/// Data
 var userList: [String: User] = [
     "old_weitong": User(name: "老胃痛", age: 114, showage: true, profile: .oldWeitong, realName: "吴树"),
     "little_onion": User(name: "葱葱", age: 14, showage: true, profile: .littleOnion, realName: "吴葱"),
@@ -35,7 +35,7 @@ let PROFILE_SCALE: CGFloat = 40
 let BOARD_HEIGHT: CGFloat = 250
 
 
-// Type Defining
+/// Type Defining
 struct User: Hashable {
     var name: String
     var age: Int
@@ -59,7 +59,7 @@ struct Comment: Hashable, Identifiable {
 }
 
 
-// Groosip View
+/// Groosip View
 struct GrossipView: View {
     @State var boardList: [Board]
     @State var commentMapping: [Board: [Comment]]
@@ -77,7 +77,7 @@ struct GrossipView: View {
     @State private var isRefreshed: Bool = false
     @State private var refreshViewId = Date().timeIntervalSince1970
     
-    // Body
+    /// Body
     var body: some View {
         GrossipList()
     }
@@ -131,7 +131,7 @@ struct GrossipView: View {
         }.id(refreshViewId)
     }
     
-    // The main list of grossip boards.
+    /// The main list of grossip boards.
     func GrossipList() -> some View {
         NavigationSplitView {
             HStack {
@@ -175,7 +175,7 @@ struct GrossipView: View {
         }
     }
     
-    // A grossip board with a comment view.
+    /// A grossip board with a comment view.
     func GrossipBoard(board: Board) -> some View {
         NavigationView {
             NavigationLink {
@@ -186,7 +186,7 @@ struct GrossipView: View {
         }
     }
     
-    // Detail of a single grossip
+    /// Detail of a single grossip
     func GrossipDetail(board: Board) -> some View {
         VStack {
             BasicGrossipDetail(board: board, profile_scale: PROFILE_SCALE).padding(.bottom, 20)
@@ -214,7 +214,7 @@ struct GrossipView: View {
     }
     
     
-    // The input of comments
+    /// The input of comments
     func CommentInput(targetBoard: Board) -> some View {
         HStack(alignment: .center) {
             Button(action: {
@@ -240,7 +240,7 @@ struct GrossipView: View {
         }
     }
     
-    // A list of comments
+    /// A list of comments
     func CommentList(comments: [Comment], profile_scale: CGFloat) -> some View {
         SwiftUI.ScrollView {
             ForEach(comments.reversed()) { comment in
@@ -250,7 +250,7 @@ struct GrossipView: View {
         }
     }
     
-    // Just a single comment
+    /// Just a single comment
     func SingleComment(comment: Comment, profile_scale: CGFloat) -> some View {
         HStack {
             Image(comment.user.profile).resizable().frame(width: profile_scale, height: profile_scale).clipShape(Circle())
@@ -268,7 +268,7 @@ struct GrossipView: View {
     }
     
     
-    // A basic grosip board without a comment view.
+    /// A basic grosip board without a comment view.
     func BasicGrossipBoard(board: Board) -> some View {
         ZStack {
             Rectangle().fill(board.color)
@@ -294,6 +294,6 @@ struct GrossipView: View {
 
 #Preview {
     GrossipView(boardList: grossipBoardList, commentMapping: grossipCommentList)
-    // GrossipView().BasicGrossipDetail(board: grossip_board_list[0], profile_scale: PROFILE_SCALE)
-    // GrossipView().CommentInput(targetBoard: grossip_board_list[0])
+    /// GrossipView().BasicGrossipDetail(board: grossip_board_list[0], profile_scale: PROFILE_SCALE)
+    /// GrossipView().CommentInput(targetBoard: grossip_board_list[0])
 }
