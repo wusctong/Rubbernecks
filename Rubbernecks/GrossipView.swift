@@ -294,6 +294,6 @@ struct GrossipView: View {
 
 #Preview {
     GrossipView(boardList: grossipBoardList, commentMapping: grossipCommentList)
-    /// GrossipView().BasicGrossipDetail(board: grossip_board_list[0], profile_scale: PROFILE_SCALE)
-    /// GrossipView().CommentInput(targetBoard: grossip_board_list[0])
+    // GrossipView().BasicGrossipDetail(board: grossip_board_list[0], profile_scale: PROFILE_SCALE)
+    // GrossipView().CommentInput(targetBoard: grossip_board_list[0])
 }
