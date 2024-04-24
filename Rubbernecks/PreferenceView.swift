@@ -24,8 +24,10 @@ struct PreferenceView: View {
     @State var tmpName: String = currentUser.name
     @State var tmpAge: Int = currentUser.age
     @State var tmpShowage: Bool = currentUser.showage
-    @State var tmpProfile: ImageResource = currentUser.profile
+    @State var tmpProfile: UIImage?
     @State var tmpRealName: String = currentUser.realName
+    
+    @State var showImagePicker: Bool = false
     
     var body: some View {
         Preference()
@@ -45,6 +47,20 @@ struct PreferenceView: View {
     
     func UserInput() -> some View {
         List {
+            VStack(alignment: .center) {
+                if tmpProfile != nil {
+                    Image(uiImage: tmpProfile!).resizable().aspectRatio(contentMode: .fill).frame(width: 150, height: 150).clipShape(.circle)
+                } else {
+                    Text("选择图片")
+                }
+                Button(action: {
+                    showImagePicker = true
+                }, label: {
+                    Text("选择图片")
+                }).sheet(isPresented: $showImagePicker, content: {
+                    ImagePicker(image: $tmpProfile)
+                })
+            }
             HStack {
                 Text("用户名")
                 Spacer()
@@ -74,7 +90,7 @@ struct PreferenceView: View {
                     RoundedRectangle(cornerRadius: 13).fill(.accent)
                     Text((currentUser.name != tmpName || currentUser.age != tmpAge || currentUser.showage != tmpShowage || currentUser.realName != tmpRealName) ? "保存结果" : "未修改").foregroundStyle(.white).bold()
                 }).onTapGesture {
-                    currentUser = User(name: tmpName, age: tmpAge, showage: tmpShowage, profile: tmpProfile, realName: tmpRealName)
+                    currentUser = User(name: tmpName, age: tmpAge, showage: tmpShowage, profile: .grandmaQian, realName: tmpRealName)
                     refresh()
                 }
             }

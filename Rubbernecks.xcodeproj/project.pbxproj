@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		03778EA62BD16CDB00FC7A4A /* GrossipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03778EA52BD16CDB00FC7A4A /* GrossipView.swift */; };
+		037F16D82BD92FB90083E058 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037F16D72BD92FB90083E058 /* ImagePickerView.swift */; };
 		03C1953A2BD38B2D00760FAA /* PreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03C195392BD38B2C00760FAA /* PreferenceView.swift */; };
 		03E030182BD1967200DA8BD4 /* AdviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E030172BD1967100DA8BD4 /* AdviceView.swift */; };
 		03E32C9D2BCFF52B009E8F69 /* RubbernecksApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E32C9C2BCFF52B009E8F69 /* RubbernecksApp.swift */; };
@@ -18,6 +19,7 @@
 
 /* Begin PBXFileReference section */
 		03778EA52BD16CDB00FC7A4A /* GrossipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GrossipView.swift; sourceTree = "<group>"; };
+		037F16D72BD92FB90083E058 /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
 		03C195392BD38B2C00760FAA /* PreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferenceView.swift; sourceTree = "<group>"; };
 		03E030172BD1967100DA8BD4 /* AdviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdviceView.swift; sourceTree = "<group>"; };
 		03E32C992BCFF52B009E8F69 /* Rubbernecks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rubbernecks.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -60,6 +62,7 @@
 				03E32C9C2BCFF52B009E8F69 /* RubbernecksApp.swift */,
 				03E32C9E2BCFF52B009E8F69 /* ContentView.swift */,
 				03C195392BD38B2C00760FAA /* PreferenceView.swift */,
+				037F16D72BD92FB90083E058 /* ImagePickerView.swift */,
 				03E030172BD1967100DA8BD4 /* AdviceView.swift */,
 				03778EA52BD16CDB00FC7A4A /* GrossipView.swift */,
 				03E32CA02BCFF52E009E8F69 /* Assets.xcassets */,
@@ -150,6 +153,7 @@
 				03E32C9F2BCFF52B009E8F69 /* ContentView.swift in Sources */,
 				03C1953A2BD38B2D00760FAA /* PreferenceView.swift in Sources */,
 				03E030182BD1967200DA8BD4 /* AdviceView.swift in Sources */,
+				037F16D82BD92FB90083E058 /* ImagePickerView.swift in Sources */,
 				03E32C9D2BCFF52B009E8F69 /* RubbernecksApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
