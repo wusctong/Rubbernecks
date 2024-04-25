@@ -10,24 +10,20 @@ import SwiftUI
 
 var currentUser: User = User(name: "游客", age: 1, showage: false, profile: .iconForShow, realName: "游客")
 
-var preferenceContentList: [String] = [
-    "匿名发言"
-]
-var preferenceStatementList: [Bool] = [
-    false
-]
-
+let fileManager = UserDefaults.standard
+let currentUserKey: String = "currentUserKey"
 
 struct PreferenceView: View {
     @State private var refreshViewId = Date().timeIntervalSince1970
     
-    @State var tmpName: String = currentUser.name
-    @State var tmpAge: Int = currentUser.age
-    @State var tmpShowage: Bool = currentUser.showage
-    @State var tmpProfile: UIImage?
-    @State var tmpRealName: String = currentUser.realName
+    @State private var tmpName: String = currentUser.name
+    @State private var tmpAge: Int = currentUser.age
+    @State private var tmpShowage: Bool = currentUser.showage
+    @State private var tmpProfile: UIImage? = currentUser.profile
+    @State private var tmpRealName: String = currentUser.realName
     
-    @State var showImagePicker: Bool = false
+    @State private var showImagePicker: Bool = false
+    @State private var isRead: Bool = false
     
     var body: some View {
         Preference()
@@ -41,25 +37,24 @@ struct PreferenceView: View {
                 Spacer()
             }.padding(.horizontal, 20).padding(.top, 20)
             UserInput().id(refreshViewId)
-            PreferenceList()
         }
     }
     
     func UserInput() -> some View {
         List {
-            VStack(alignment: .center) {
+            HStack {
+                Spacer()
                 if tmpProfile != nil {
                     Image(uiImage: tmpProfile!).resizable().aspectRatio(contentMode: .fill).frame(width: 150, height: 150).clipShape(.circle)
+                        .onTapGesture {
+                        showImagePicker = true
+                        }.sheet(isPresented: $showImagePicker, content: {
+                            ImagePicker(image: $tmpProfile)
+                        })
                 } else {
                     Text("选择图片")
                 }
-                Button(action: {
-                    showImagePicker = true
-                }, label: {
-                    Text("选择图片")
-                }).sheet(isPresented: $showImagePicker, content: {
-                    ImagePicker(image: $tmpProfile)
-                })
+                Spacer()
             }
             HStack {
                 Text("用户名")
@@ -85,20 +80,48 @@ struct PreferenceView: View {
                 TextField("", text: $tmpRealName).frame(width: 100)
             }
             HStack {
+                Text("读取本地数据").padding(.vertical, 10).padding(.horizontal, 30).bold()
+                    .overlay(content: {
+                        RoundedRectangle(cornerRadius: 13).fill(.accent)
+                        Text("读取本地数据").foregroundStyle(.white).bold()
+                    })
+                    .onTapGesture {
+                        if fileManager.object(forKey: currentUserKey) != nil {
+                            currentUser = fileManager.object(forKey: currentUserKey) as! User
+                        }
+                        isRead = true
+                    }
+                    .alert(isPresented: $isRead) {
+                        Alert(title: Text("读取成功"), dismissButton: Alert.Button.default(Text("好的"), action: {
+                                isRead = false
+                            })
+                        )
+                    }
                 Spacer()
-                Text((currentUser.name != tmpName || currentUser.age != tmpAge || currentUser.showage != tmpShowage || currentUser.realName != tmpRealName) ? "保存结果" : "未修改").padding(.vertical, 10).padding(.horizontal, 30).bold().overlay(content: {
-                    RoundedRectangle(cornerRadius: 13).fill(.accent)
-                    Text((currentUser.name != tmpName || currentUser.age != tmpAge || currentUser.showage != tmpShowage || currentUser.realName != tmpRealName) ? "保存结果" : "未修改").foregroundStyle(.white).bold()
-                }).onTapGesture {
-                    currentUser = User(name: tmpName, age: tmpAge, showage: tmpShowage, profile: .grandmaQian, realName: tmpRealName)
-                    refresh()
-                }
+                Text((currentUser.name != tmpName || currentUser.age != tmpAge || currentUser.profile != tmpProfile || currentUser.showage != tmpShowage || currentUser.realName != tmpRealName) ? "保存结果" : "未修改").padding(.vertical, 10).padding(.horizontal, 30).bold()
+                    .overlay(content: {
+                        RoundedRectangle(cornerRadius: 13).fill(.accent)
+                        Text((currentUser.name != tmpName || currentUser.age != tmpAge || currentUser.showage != tmpShowage || currentUser.profile != tmpProfile || currentUser.realName != tmpRealName) ? "保存结果" : "未修改").foregroundStyle(.white).bold()
+                    })
+                    .onTapGesture {
+                        currentUser = User(name: tmpName, age: tmpAge, showage: tmpShowage, profile: tmpProfile!, realName: tmpRealName)
+                        fileManager.set(currentUser, forKey: currentUserKey)
+                        refresh()
+                    }
             }
         }
     }
     
-    func PreferenceList() -> some View {
-        VStack {}
+    private func saveUser(_ user: User, forKey: String) {
+        let encoder = JSONEncoder()
+        do {
+            fileManager.set(encoder.encode(user), forKey: forKey)
+        } catch {
+            throw 
+        }
+    }
+    private func getUser(forKey: String) {
+        
     }
     
     private func refresh() {

@@ -11,9 +11,9 @@ import SwiftUI
 
 /// Data
 var userList: [String: User] = [
-    "old_weitong": User(name: "老胃痛", age: 114, showage: true, profile: .oldWeitong, realName: "吴树"),
+    "old_weitong": User(name: "胃痛的老爷爷", age: 88, showage: true, profile: .oldWeitong, realName: "吴树"),
     "little_onion": User(name: "葱葱", age: 14, showage: true, profile: .littleOnion, realName: "吴葱"),
-    "grandma_qian": User(name:"吔炫奶奶", age: 77, showage: false, profile: .grandmaQian, realName: "钱吔炫")
+    "grandma_qian": User(name: "钱奶奶", age: 77, showage: false, profile: .grandmaQian, realName: "钱吔炫")
 ]
 var grossipBoardList: [Board] = [
     Board(user: userList["old_weitong"]!, title: "0702的小孩竟然喜欢洗碗", content: "我昨天去他们家做客，听到孩子说：“拔拔，我要洗碗，我爱洗碗！”我惊得大彻大悟，下巴掉在了地上！\n现在的年轻人真是奇怪额……", color: .teal),
@@ -36,15 +36,15 @@ let BOARD_HEIGHT: CGFloat = 250
 
 
 /// Type Defining
-struct User: Hashable {
+struct User: Hashable, Encodable {
     var name: String
     var age: Int
     var showage: Bool
-    var profile: ImageResource
+    var profile: UIImage
     
     var realName: String
 }
-struct Board: Hashable, Identifiable {
+struct Board: Hashable, Identifiable, Encodable {
     let id = UUID()
     var user: User!
     var title: String
@@ -52,7 +52,7 @@ struct Board: Hashable, Identifiable {
     
     var color = Color.pink
 }
-struct Comment: Hashable, Identifiable {
+struct Comment: Hashable, Identifiable, Encodable {
     let id = UUID()
     var user: User!
     var content: String
@@ -201,16 +201,19 @@ struct GrossipView: View {
     
     func BasicGrossipDetail(board: Board, profile_scale: CGFloat) -> some View {
         VStack {
-            Text(board.title).font(.title).bold().multilineTextAlignment(.leading)
             HStack {
-                Image(board.user.profile).resizable().frame(width: profile_scale, height: profile_scale).clipShape(Circle())
+                Text(board.title).font(.title).bold().multilineTextAlignment(.leading)
+                Spacer()
+            }
+            HStack {
+                Image(uiImage: board.user.profile).resizable().frame(width: profile_scale, height: profile_scale).clipShape(Circle())
                 HStack {
                     Text("@" + board.user.name).font(.title2).lineLimit(1).bold().multilineTextAlignment(.leading)
                     Spacer()
                 }
-            }.padding(.horizontal, 20)
-            Text(board.content).font(.title3).padding(.leading, 40).padding(.trailing, 20)
-        }
+            }
+            Text(board.content).font(.title3).padding(.leading, 20).padding(.trailing, 20)
+        }.padding(.horizontal, 20)
     }
     
     
@@ -244,8 +247,10 @@ struct GrossipView: View {
     func CommentList(comments: [Comment], profile_scale: CGFloat) -> some View {
         SwiftUI.ScrollView {
             ForEach(comments.reversed()) { comment in
-                SingleComment(comment: comment, profile_scale: profile_scale)
-                    .padding(.bottom, 15)
+                SingleComment(comment: comment, profile_scale: profile_scale).padding(.vertical, 5)
+                if comment != comments.first {
+                    Divider()
+                }
             }
         }
     }
@@ -253,11 +258,14 @@ struct GrossipView: View {
     /// Just a single comment
     func SingleComment(comment: Comment, profile_scale: CGFloat) -> some View {
         HStack {
-            Image(comment.user.profile).resizable().frame(width: profile_scale, height: profile_scale).clipShape(Circle())
+            Image(uiImage: comment.user.profile).resizable().frame(width: profile_scale, height: profile_scale).clipShape(Circle())
             VStack {
                 HStack {
-                    Text("@" + comment.user.name).font(.title3).lineLimit(1).bold()
+                    Text("@" + comment.user.name).font(.subheadline).lineLimit(1).bold()
                     Spacer()
+                    if comment.user.showage == true {
+                        Text("\(comment.user.age)岁").font(.subheadline).foregroundStyle(.gray)
+                    }
                 }
                 HStack {
                     Text(" " + comment.content)

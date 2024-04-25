@@ -116,11 +116,12 @@
 			};
 			buildConfigurationList = 03E32C942BCFF52B009E8F69 /* Build configuration list for PBXProject "Rubbernecks" */;
 			compatibilityVersion = "Xcode 14.0";
-			developmentRegion = en;
+			developmentRegion = "zh-Hans";
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 03E32C902BCFF52B009E8F69;
 			productRefGroup = 03E32C9A2BCFF52B009E8F69 /* Products */;
