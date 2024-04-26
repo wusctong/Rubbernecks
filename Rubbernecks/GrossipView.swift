@@ -19,7 +19,7 @@ var userList: [String: User] = [
 var grossipBoardList: [Board] = [
     Board(user: userList["old_weitong"]!, title: "恭喜！隔壁老王的儿子考上大学了！", content: "我昨天去他们家做客，老王很高兴啊。原来是儿子考上大学了，交大！\n真佩服老王，教出这么个好儿子", color: .teal),
     Board(user: userList["little_onion"]!, title: "小区里有个小鸟聚集地！", content: "我昨天下楼远远地看到好多不同颜色的鸟在滑滑梯旁边吃东西，头一动一动的，好可爱。\n明天谁想和我一起去喂鸟？", color: .mint),
-    Board(user: userList["grandma_qian"]!, title: "课间操有大问题！！！", content: "课间操的动作一会向右，一会向左，容易把人绕晕！！！建议改版！！！人在做，天在看！不要胡作非为！", color: .yellow)
+    Board(user: userList["grandma_qian"]!, title: "我家一开水又有异响！物业！", content: "啊啊啊！物业，好几次了，能不能解决一下？", color: .yellow)
 ]
 var grossipCommentList: [Board: [Comment]] = [
     grossipBoardList[0]: [
@@ -30,13 +30,15 @@ var grossipCommentList: [Board: [Comment]] = [
         Comment(user: userList["old_wang"], content: "哈哈！过奖了过奖了")
     ],
     grossipBoardList[1]: [
-        Comment(user: userList["grandma_qian"], content: "恭喜恭喜！"),
-        Comment(user: userList["grandma_qian"], content: "老王有实力"),
-        Comment(user: userList["little_onion"], content: "好厉害额"),
-        Comment(user: userList["old_weitong"], content: "嗯那"),
-        Comment(user: userList["old_wang"], content: "哈哈！过奖了过奖了"),
+        Comment(user: userList["grandma_qian"], content: "我要去！"),
+        Comment(user: userList["old_wang"], content: "我知道，我上次还去放过瓜子呢"),
+        Comment(user: userList["little_onion"], content: "鸟鸟都特别可爱！"),
+        Comment(user: userList["old_weitong"], content: "我也要看看"),
+        Comment(user: userList["old_wang"], content: "那些鸟很漂亮的……"),
     ],
-    grossipBoardList[2]: []
+    grossipBoardList[2]: [
+        Comment(user: userList["little_onion"], content: "奶奶，这个要发到建议区的……")
+    ]
 ]
 
 let PROFILE_SCALE: CGFloat = 40
