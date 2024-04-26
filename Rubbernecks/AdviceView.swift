@@ -98,6 +98,7 @@ struct AdviceView: View {
     @State private var tmpAdviceContent: String = ""
     @State private var tmpAdviceColor: Color = .pink
     @State private var isSent: Bool = false
+    @State private var isBadBoard: Bool = false
     
     @State private var isRefreshed: Bool = false
     @State private var refreshViewId = Date().timeIntervalSince1970
@@ -117,7 +118,11 @@ struct AdviceView: View {
                 ColorPicker(selection: $tmpAdviceColor, label: {
                     Text("建议板颜色").font(.title2).foregroundStyle(tmpAdviceColor)
                 })
-                Spacer()
+                Spacer().alert(isPresented: $isBadBoard) {
+                    Alert(title: Text("发布错误"), message: Text("填写信息缺失"), dismissButton: Alert.Button.default(Text("继续编辑"), action: {
+                        isBadBoard = false
+                    }))
+                }
                 Text("发布").font(.title).bold().padding(.vertical, 10).padding(.horizontal, 30)
                     .alert(isPresented: $isSent) {
                         Alert(title: Text("已发布"), message: Text("已发布建议"), dismissButton: Alert.Button.default(Text("好的"), action: {
@@ -129,14 +134,18 @@ struct AdviceView: View {
                     Text("发布").font(.title).bold().foregroundStyle(.white)
                     })
                     .onTapGesture {
-                        tmpAdviceBoard = AdviceBoard(user: currentUser, title: tmpAdviceTitle, content: tmpAdviceContent, color: tmpAdviceColor, statement: 0, vote: 0)
-                        boardList.append(tmpAdviceBoard)
-                        
-                        tmpAdviceTitle = ""
-                        tmpAdviceContent = ""
-                        tmpAdviceColor = .pink
-                        
-                        isSent = true
+                        if tmpAdviceTitle == "" || tmpAdviceContent == "" {
+                            isBadBoard = true
+                        } else {
+                            tmpAdviceBoard = AdviceBoard(user: currentUser, title: tmpAdviceTitle, content: tmpAdviceContent, color: tmpAdviceColor, statement: 0, vote: 0)
+                            boardList.append(tmpAdviceBoard)
+                            
+                            tmpAdviceTitle = ""
+                            tmpAdviceContent = ""
+                            tmpAdviceColor = .pink
+                            
+                            isSent = true
+                        }
                     }
             }
             TextEditor(text: $tmpAdviceContent).padding(5)

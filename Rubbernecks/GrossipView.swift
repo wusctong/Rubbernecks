@@ -13,21 +13,29 @@ import SwiftUI
 var userList: [String: User] = [
     "old_weitong": User(name: "胃痛的老爷爷", age: 88, showage: true, profile: .oldWeitong, realName: "吴树"),
     "little_onion": User(name: "葱葱", age: 14, showage: true, profile: .littleOnion, realName: "吴葱"),
-    "grandma_qian": User(name: "钱奶奶", age: 77, showage: false, profile: .grandmaQian, realName: "钱吔炫")
+    "grandma_qian": User(name: "钱奶奶", age: 77, showage: false, profile: .grandmaQian, realName: "钱吔炫"),
+    "old_wang": User(name: "老王", age: 67, showage: true, profile: .oldWang, realName: "王虎")
 ]
 var grossipBoardList: [Board] = [
-    Board(user: userList["old_weitong"]!, title: "0702的小孩竟然喜欢洗碗", content: "我昨天去他们家做客，听到孩子说：“拔拔，我要洗碗，我爱洗碗！”我惊得大彻大悟，下巴掉在了地上！\n现在的年轻人真是奇怪额……", color: .teal),
-    Board(user: userList["little_onion"]!, title: "我画的小狗狗活了！！！", content: "我画了条小狗，没想到活了；随手拍了下来，没想到火了；不小心点到了流量加成，又一不小心画了114514元买了1145140次观看，啊哈哈哈好荒谬。", color: .mint),
+    Board(user: userList["old_weitong"]!, title: "恭喜！隔壁老王的儿子考上大学了！", content: "我昨天去他们家做客，老王很高兴啊。原来是儿子考上大学了，交大！\n真佩服老王，教出这么个好儿子", color: .teal),
+    Board(user: userList["little_onion"]!, title: "小区里有个小鸟聚集地！", content: "我昨天下楼远远地看到好多不同颜色的鸟在滑滑梯旁边吃东西，头一动一动的，好可爱。\n明天谁想和我一起去喂鸟？", color: .mint),
     Board(user: userList["grandma_qian"]!, title: "课间操有大问题！！！", content: "课间操的动作一会向右，一会向左，容易把人绕晕！！！建议改版！！！人在做，天在看！不要胡作非为！", color: .yellow)
 ]
 var grossipCommentList: [Board: [Comment]] = [
     grossipBoardList[0]: [
-        Comment(user: userList["grandma_qian"], content: "哇哦，这么神奇的吗？！"),
-        Comment(user: userList["grandma_qian"], content: "好奇怪啊。。。"),
-        Comment(user: userList["little_onion"], content: "好神奇，竟然不喜欢画画？"),
-        Comment(user: userList["old_weitong"], content: "看不懂斯密达"),
-        Comment(user: userList["old_weitong"], content: "VERY SDLANGE~")],
-    grossipBoardList[1]: [],
+        Comment(user: userList["grandma_qian"], content: "恭喜恭喜！"),
+        Comment(user: userList["grandma_qian"], content: "老王有实力"),
+        Comment(user: userList["little_onion"], content: "好厉害额"),
+        Comment(user: userList["old_weitong"], content: "嗯那"),
+        Comment(user: userList["old_wang"], content: "哈哈！过奖了过奖了")
+    ],
+    grossipBoardList[1]: [
+        Comment(user: userList["grandma_qian"], content: "恭喜恭喜！"),
+        Comment(user: userList["grandma_qian"], content: "老王有实力"),
+        Comment(user: userList["little_onion"], content: "好厉害额"),
+        Comment(user: userList["old_weitong"], content: "嗯那"),
+        Comment(user: userList["old_wang"], content: "哈哈！过奖了过奖了"),
+    ],
     grossipBoardList[2]: []
 ]
 
@@ -36,7 +44,7 @@ let BOARD_HEIGHT: CGFloat = 250
 
 
 /// Type Defining
-struct User: Hashable, Encodable {
+struct User: Hashable {
     var name: String
     var age: Int
     var showage: Bool
@@ -44,7 +52,7 @@ struct User: Hashable, Encodable {
     
     var realName: String
 }
-struct Board: Hashable, Identifiable, Encodable {
+struct Board: Hashable, Identifiable {
     let id = UUID()
     var user: User!
     var title: String
@@ -52,7 +60,7 @@ struct Board: Hashable, Identifiable, Encodable {
     
     var color = Color.pink
 }
-struct Comment: Hashable, Identifiable, Encodable {
+struct Comment: Hashable, Identifiable {
     let id = UUID()
     var user: User!
     var content: String
@@ -210,6 +218,9 @@ struct GrossipView: View {
                 HStack {
                     Text("@" + board.user.name).font(.title2).lineLimit(1).bold().multilineTextAlignment(.leading)
                     Spacer()
+                    if board.user.showage == true {
+                        Text("\(board.user.age)岁").font(.subheadline).foregroundStyle(.gray)
+                    }
                 }
             }
             Text(board.content).font(.title3).padding(.leading, 20).padding(.trailing, 20)

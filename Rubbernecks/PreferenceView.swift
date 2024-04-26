@@ -10,9 +10,6 @@ import SwiftUI
 
 var currentUser: User = User(name: "游客", age: 1, showage: false, profile: .iconForShow, realName: "游客")
 
-let fileManager = UserDefaults.standard
-let currentUserKey: String = "currentUserKey"
-
 struct PreferenceView: View {
     @State private var refreshViewId = Date().timeIntervalSince1970
     
@@ -80,23 +77,6 @@ struct PreferenceView: View {
                 TextField("", text: $tmpRealName).frame(width: 100)
             }
             HStack {
-                Text("读取本地数据").padding(.vertical, 10).padding(.horizontal, 30).bold()
-                    .overlay(content: {
-                        RoundedRectangle(cornerRadius: 13).fill(.accent)
-                        Text("读取本地数据").foregroundStyle(.white).bold()
-                    })
-                    .onTapGesture {
-                        if fileManager.object(forKey: currentUserKey) != nil {
-                            currentUser = fileManager.object(forKey: currentUserKey) as! User
-                        }
-                        isRead = true
-                    }
-                    .alert(isPresented: $isRead) {
-                        Alert(title: Text("读取成功"), dismissButton: Alert.Button.default(Text("好的"), action: {
-                                isRead = false
-                            })
-                        )
-                    }
                 Spacer()
                 Text((currentUser.name != tmpName || currentUser.age != tmpAge || currentUser.profile != tmpProfile || currentUser.showage != tmpShowage || currentUser.realName != tmpRealName) ? "保存结果" : "未修改").padding(.vertical, 10).padding(.horizontal, 30).bold()
                     .overlay(content: {
@@ -105,23 +85,10 @@ struct PreferenceView: View {
                     })
                     .onTapGesture {
                         currentUser = User(name: tmpName, age: tmpAge, showage: tmpShowage, profile: tmpProfile!, realName: tmpRealName)
-                        fileManager.set(currentUser, forKey: currentUserKey)
                         refresh()
                     }
             }
         }
-    }
-    
-    private func saveUser(_ user: User, forKey: String) {
-        let encoder = JSONEncoder()
-        do {
-            fileManager.set(encoder.encode(user), forKey: forKey)
-        } catch {
-            throw 
-        }
-    }
-    private func getUser(forKey: String) {
-        
     }
     
     private func refresh() {
