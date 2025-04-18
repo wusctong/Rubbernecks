@@ -38,55 +38,81 @@ struct SingleAdviceBoardView: View {
     
     var body: some View {
         ZStack {
-            Rectangle().fill(adviceBoard.color)
+            RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS)
+                .fill(.clear)
+                .stroke(adviceBoard.color, lineWidth: 3)
+                .padding(3)
             VStack(alignment: .leading) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 13).fill(adviceBoard.color).padding(5)
-                    HStack {
-                        Text(adviceBoard.title).font(.title).bold()
-                        Spacer()
-                        Text(adviceBoard.user.name).font(.title2)
-                    }.padding(10)
-                }.frame(height: 150)
+                Spacer()
+                infoTab()
+                controlTab()
+                detailTab()
+                Spacer()
+            }
+        }.frame(height: isOpened ? 100 + 295 + 17 * CGFloat(adviceBoard.content.count) / 14 : 260 + 70)
+    }
+    
+    func infoTab() -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS * 0.8)
+                .stroke(adviceBoard.color, lineWidth: 2)
+                .padding(5)
+            HStack {
+                Text(adviceBoard.title).font(.title).bold()
+                Spacer()
+                Text(adviceBoard.user.name).font(.title2)
+            }.padding(.horizontal, 10)
+        }.frame(height: 150)
+            .onTapGesture {
+                withAnimation(.bouncy) {
+                    isOpened.toggle()
+                }
+            }.padding(.horizontal, 5)
+    }
+    
+    func controlTab() -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS * 0.8)
+                .stroke(adviceBoard.color, lineWidth: 2)
+                .padding(5)
+                .frame(height: isOpened ? 90 : 70)
+            HStack {
+                Text("热度：").font(.title3).fontWeight(.regular)
+                Text("\(adviceBoard.vote)").contentTransition(.numericText()).font(.largeTitle).bold()
+                Spacer()
+                Image(systemName: "suit.heart").imageScale(.large).padding(.horizontal, 30).padding(.vertical, 10)
+                    .overlay(content: {
+                        RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS * 0.8 * 0.8).stroke(adviceBoard.color, lineWidth: 1).fill(isVoted ? adviceBoard.color : .clear)
+                        Image(systemName: isVoted ? "suit.heart.fill" : "suit.heart").imageScale(.large).scaleEffect(isVoted ? 1.4 : 1).foregroundStyle(isVoted ? .white : adviceBoard.color)
+                    })
                     .onTapGesture {
                         withAnimation(.bouncy) {
-                            isOpened.toggle()
+                            isVoted.toggle()
+                            adviceBoard.vote += isVoted ? 1 : -1
                         }
                     }
-                ZStack {
-                    RoundedRectangle(cornerRadius: 13).fill(.white.opacity(0.3)).frame(height: isOpened ? 90 : 70)
-                    HStack {
-                        Text("热度：").font(.title3).fontWeight(.regular)
-                        Text("\(adviceBoard.vote)").contentTransition(.numericText()).font(.largeTitle).bold()
-                        Spacer()
-                        Image(systemName: "suit.heart").imageScale(.large).padding(.horizontal, 30).padding(.vertical, 10)
-                            .overlay(content: {
-                                RoundedRectangle(cornerRadius: 11).fill(adviceBoard.color)
-                                Image(systemName: isVoted ? "suit.heart.fill" : "suit.heart").imageScale(.large).scaleEffect(isVoted ? 1.4 : 1).foregroundStyle(.white)
-                            })
-                            .onTapGesture {
-                                withAnimation(.bouncy) {
-                                    isVoted.toggle()
-                                    adviceBoard.vote += isVoted ? 1 : -1
-                                }
-                            }
-                    }.offset(y: 1).padding(20)
-                }.frame(height: isOpened ? 90 : 70).padding(.horizontal, 5)
-                ZStack {
-                    RoundedRectangle(cornerRadius: 13).fill(.white.opacity(0.35)).frame(height: isOpened ? 126 + 20 * CGFloat(adviceBoard.content.count) / 16 : 82)
-                    VStack {
-                        HStack {
-                            Text("状态：" + STATEMENT_DESCRIBE[adviceBoard.statement]).bold().font(.title3)
-                            Spacer()
-                        }.padding(.bottom, isOpened ? 20 : 10)
-                        HStack {
-                            Text(adviceBoard.content).font(.title3)
-                            Spacer(minLength: 0)
-                        }
-                    }.padding(5)
-                }.frame(height: isOpened ? 126 + 17 * CGFloat(adviceBoard.content.count) / 14 : 82).padding(.horizontal, 5)
-            }
-        }.frame(height: isOpened ? 100 + 295 + 17 * CGFloat(adviceBoard.content.count) / 14 : 260 + 70).clipShape(RoundedRectangle(cornerRadius: 15))
+            }.offset(y: 1).padding(.horizontal, 10)
+        }.frame(height: isOpened ? 90 : 70).padding(.horizontal, 5)
+    }
+    
+    func detailTab() -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS * 0.8)
+                .stroke(adviceBoard.color, lineWidth: 2)
+                .padding(5)
+                .frame(height: isOpened ? 126 + 20 * CGFloat(adviceBoard.content.count) / 16 : 82)
+            VStack {
+                HStack {
+                    Text("状态：" + STATEMENT_DESCRIBE[adviceBoard.statement]).bold().font(.title3)
+                    Spacer()
+                }.padding(.bottom, isOpened ? 20 : 10)
+                HStack {
+                    Text(adviceBoard.content).font(.title3)
+                    Spacer(minLength: 0)
+                }
+            }.padding(10)
+        }.frame(height: isOpened ? 126 + 17 * CGFloat(adviceBoard.content.count) / 14 : 82)
+            .padding(.horizontal, 5)
     }
 }
 
@@ -112,7 +138,7 @@ struct AdviceView: View {
         VStack {
             TextField("标题", text: $tmpAdviceTitle).font(.largeTitle).bold().padding(5)
                 .overlay(content: {
-                    RoundedRectangle(cornerRadius: 15).stroke(tmpAdviceColor, lineWidth: 2)
+                    RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS).stroke(tmpAdviceColor, lineWidth: 2)
             })
             HStack {
                 ColorPicker(selection: $tmpAdviceColor, label: {
@@ -130,7 +156,7 @@ struct AdviceView: View {
                         }))
                     }
                     .overlay(content: {
-                    RoundedRectangle(cornerRadius: 15).fill(tmpAdviceColor)
+                    RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS).fill(tmpAdviceColor)
                     Text("发布").font(.title).bold().foregroundStyle(.white)
                     })
                     .onTapGesture {
@@ -150,7 +176,7 @@ struct AdviceView: View {
             }
             TextEditor(text: $tmpAdviceContent).padding(5)
                 .overlay(content: {
-                    RoundedRectangle(cornerRadius: 15).stroke(tmpAdviceColor, lineWidth: 2)
+                    RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS).stroke(tmpAdviceColor, lineWidth: 2)
                 })
         }.id(refreshViewId)
     }
@@ -158,41 +184,47 @@ struct AdviceView: View {
     func AdviceList(boardList: [AdviceBoard]) -> some View {
         NavigationSplitView {
             VStack {
-                HStack {
-                    Text("建议区").font(.largeTitle).bold()
-                    Spacer()
-                    Spacer()
-                    Image(systemName: "plus.app").imageScale(.large).padding(.horizontal, 20).padding(.vertical, 10)
-                        .overlay(content: {
-                            RoundedRectangle(cornerRadius: 15).fill(.accent)
-                            Text("刷新").font(.title3).fontWeight(.medium).foregroundStyle(.white)
-                        })
-                        .alert(isPresented: $isRefreshed) {
-                            Alert(title: Text("已刷新"), message: Text("去看看建议吧"), dismissButton: Alert.Button.default(Text("好的"), action: {
-                                isRefreshed = false
-                            }))
-                        }
-                        .onTapGesture {
-                            refresh()
-                            isRefreshed = true
-                        }
-                    
-                    NavigationLink {
-                        AdviceInput().padding(.horizontal, 20)
-                    } label: {
-                        Image(systemName: "plus.app").imageScale(.large).padding(.horizontal, 30).padding(.vertical, 10)
+                ZStack {
+                    RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS)
+                        .fill(.clear)
+                        .stroke(.accent, lineWidth: 3)
+                        .frame(height: 100)
+                    HStack {
+                        Text("建议区").font(.largeTitle).bold()
+                        Spacer()
+                        Image(systemName: "plus.app").imageScale(.large).padding(.horizontal, 20).padding(.vertical, 10)
                             .overlay(content: {
-                                RoundedRectangle(cornerRadius: 15).fill(tmpAdviceColor)
-                                Image(systemName: "plus.app").imageScale(.large).foregroundStyle(.white)
+                                RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS * 0.8).fill(.accent)
+                                Text("刷新").font(.title3).fontWeight(.medium).foregroundStyle(.white)
                             })
-                    }
-                    
-                }.padding(.horizontal, 20).padding(.top, 20)
+                            .alert(isPresented: $isRefreshed) {
+                                Alert(title: Text("已刷新"), message: Text("去看看建议吧"), dismissButton: Alert.Button.default(Text("好的"), action: {
+                                    isRefreshed = false
+                                }))
+                            }
+                            .onTapGesture {
+                                refresh()
+                                isRefreshed = true
+                            }
+                        
+                        NavigationLink {
+                            AdviceInput().padding(.horizontal, 20)
+                        } label: {
+                            Image(systemName: "plus.app").imageScale(.large).padding(.horizontal, 30).padding(.vertical, 10)
+                                .overlay(content: {
+                                    RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS * 0.8).fill(tmpAdviceColor)
+                                    Image(systemName: "plus.app").imageScale(.large).foregroundStyle(.white)
+                                })
+                        }
+                    }.padding(5)
+                }
+                .padding(.horizontal, 22)
+                .padding(.vertical, 20)
                 SwiftUI.ScrollView {
                     ForEach(boardList.reversed()) { board in
-                        SingleAdviceBoardView(adviceBoard: board).padding(.vertical, 5)
+                        SingleAdviceBoardView(adviceBoard: board)
                     }
-                }.padding(.horizontal, 20)
+                }.padding(.horizontal, 22)
             }
         } detail: {
             Text("看看建议")

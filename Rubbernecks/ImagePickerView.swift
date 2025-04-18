@@ -11,7 +11,7 @@ import UIKit
 
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
-    @Environment (\.presentationMode) var presentationMode
+    @Environment(\.presentationMode) var presentationMode
     func makeCoordinator () -> Coordinator {
         Coordinator (self)
     }

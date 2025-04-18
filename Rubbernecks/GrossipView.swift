@@ -43,6 +43,8 @@ var grossipCommentList: [Board: [Comment]] = [
 
 let PROFILE_SCALE: CGFloat = 40
 let BOARD_HEIGHT: CGFloat = 250
+let DEFAULT_CORNER_RADIUS: CGFloat = 20
+let DEFAULT_SHADOW_RADIUS: CGFloat = 6
 
 
 /// Type Defining
@@ -97,7 +99,7 @@ struct GrossipView: View {
         VStack {
             TextField("标题", text: $tmpGrossipTitle).font(.largeTitle).bold().padding(5)
                 .overlay(content: {
-                    RoundedRectangle(cornerRadius: 15).stroke(tmpGrossipColor, lineWidth: 2)
+                    RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS).stroke(tmpGrossipColor, lineWidth: 2)
             })
             HStack {
                 ColorPicker(selection: $tmpGrossipColor, label: {
@@ -115,7 +117,7 @@ struct GrossipView: View {
                 }
                 Text("发布").font(.title).bold().padding(.vertical, 10).padding(.horizontal, 30)
                     .overlay(content: {
-                    RoundedRectangle(cornerRadius: 15).fill(tmpGrossipColor)
+                    RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS).fill(tmpGrossipColor)
                     Text("发布").font(.title).bold().foregroundStyle(.white)
                     })
                     .onTapGesture {
@@ -136,7 +138,7 @@ struct GrossipView: View {
             }
             TextEditor(text: $tmpGrossipContent).padding(5)
                 .overlay(content: {
-                    RoundedRectangle(cornerRadius: 15).stroke(tmpGrossipColor, lineWidth: 2)
+                    RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS).stroke(tmpGrossipColor, lineWidth: 2)
                 })
         }.id(refreshViewId)
     }
@@ -144,42 +146,53 @@ struct GrossipView: View {
     /// The main list of grossip boards.
     func GrossipList() -> some View {
         NavigationSplitView {
-            HStack {
-                Text("八卦区").font(.largeTitle).bold()
-                Spacer()
-                Image(systemName: "plus.app").imageScale(.large).padding(.horizontal, 20).padding(.vertical, 10)
-                    .overlay(content: {
-                        RoundedRectangle(cornerRadius: 15).fill(.accent)
-                        Text("刷新").font(.title3).fontWeight(.medium).foregroundStyle(.white)
-                    })
-                    .alert(isPresented: $isRefreshed) {
-                        Alert(title: Text("已刷新"), message: Text("去看看八卦吧"), dismissButton: Alert.Button.default(Text("好的"), action: {
-                            isRefreshed = false
-                        }))
-                    }
-                    .onTapGesture {
-                        refresh()
-                        isRefreshed = true
-                    }
-                NavigationLink {
-                    GrossipInput().padding(.horizontal, 20)
-                } label: {
-                    Image(systemName: "plus.app").imageScale(.large).padding(.horizontal, 30).padding(.vertical, 10)
+            ZStack {
+                RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS)
+                    .fill(.clear)
+                    .stroke(.accent, lineWidth: 3)
+                    .frame(height: 100)
+                HStack {
+                    Text("八卦区").font(.largeTitle).bold()
+                    Spacer()
+                    Image(systemName: "plus.app").imageScale(.large).padding(.horizontal, 20).padding(.vertical, 10)
                         .overlay(content: {
-                        RoundedRectangle(cornerRadius: 15).fill(tmpGrossipColor)
-                        Image(systemName: "plus.app").imageScale(.large).foregroundStyle(.white)
-                    })
+                            RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS * 0.8).fill(.accent)
+                            Text("刷新").font(.title3).fontWeight(.medium).foregroundStyle(.white)
+                        })
+                        .alert(isPresented: $isRefreshed) {
+                            Alert(title: Text("已刷新"), message: Text("去看看八卦吧"), dismissButton: Alert.Button.default(Text("好的"), action: {
+                                isRefreshed = false
+                            }))
+                        }
+                        .onTapGesture {
+                            refresh()
+                            isRefreshed = true
+                        }
+                    NavigationLink {
+                        GrossipInput().padding(.horizontal, 20)
+                    } label: {
+                        Image(systemName: "plus.app").imageScale(.large).padding(.horizontal, 30).padding(.vertical, 10)
+                            .overlay(content: {
+                                RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS * 0.8).fill(tmpGrossipColor)
+                                Image(systemName: "plus.app").imageScale(.large).foregroundStyle(.white)
+                            })
+                    }
                 }
-            }.padding(.horizontal, 20).padding(.top, 20)
+                .padding(5)
+            }
+            .padding(.horizontal, 22)
+            .padding(.vertical, 20)
             SwiftUI.ScrollView {
                 ForEach(boardList.reversed()) { board in
                     NavigationLink {
                         GrossipDetail(board: board)
                     } label: {
-                        BasicGrossipBoard(board: board).frame(height: BOARD_HEIGHT).padding(.vertical, 5)
+                        BasicGrossipBoard(board: board)
+                            .frame(height: BOARD_HEIGHT)
+                            //.padding(.vertical, 5)
                     }.foregroundStyle(.black)
                 }.id(refreshViewId)
-            }.padding(.horizontal, 20)
+            }.padding(.horizontal, 20).scrollIndicators(.hidden)
         } detail: {
             Text("去看看")
         }
@@ -233,27 +246,36 @@ struct GrossipView: View {
     /// The input of comments
     func CommentInput(targetBoard: Board) -> some View {
         HStack(alignment: .center) {
-            Button(action: {
+            ZStack {
+                RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS).fill(.accent)
+                Image(systemName: "arrowshape.down")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .imageScale(.medium)
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 12)
+            }.onTapGesture {
                 commentInputIsFocused = false
-            }, label: {
-                Image(systemName: "arrowshape.down").imageScale(.medium).padding(.vertical, 15).padding(.horizontal, 20).overlay(content: {
-                    RoundedRectangle(cornerRadius: 10).fill(.accent)
-                    Image(systemName: "arrowshape.down").imageScale(.medium).foregroundStyle(.white).font(.title2).foregroundStyle(.white)
-                })
-            })
-            TextField("多说点，大家爱听", text: $tmpComment).font(.title2).padding(10).overlay(content: {
-                RoundedRectangle(cornerRadius: 10).fill(.clear).stroke(.accent, lineWidth: 2)
-            }).focused($commentInputIsFocused)
-            Button(action: {
+            }.frame(width: 80)
+            ZStack {
+                RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS)
+                    .fill(.clear)
+                    .stroke(.accent, lineWidth: 3)
+                TextField("多说点，大家爱听", text: $tmpComment)
+                    .font(.title2)
+                    .padding(10)
+                    .focused($commentInputIsFocused)
+            }
+            ZStack {
+                RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS).fill(.accent)
+                Text("发送")
+                    .font(.title2)
+                    .foregroundStyle(.white)
+            }.onTapGesture {
                 commentMapping[targetBoard]!.append(Comment(user: currentUser, content: tmpComment))
                 tmpComment = ""
-            }, label: {
-                Text("发送").font(.title2).padding(.vertical, 11.5).padding(.horizontal, 20).overlay(content: {
-                    RoundedRectangle(cornerRadius: 10).fill(.accent)
-                    Text("发送").font(.title2).foregroundStyle(.white)
-                })
-            })
-        }
+            }.frame(width: 80)
+        }.frame(height: 50)
     }
     
     /// A list of comments
@@ -292,7 +314,10 @@ struct GrossipView: View {
     /// A basic grosip board without a comment view.
     func BasicGrossipBoard(board: Board) -> some View {
         ZStack {
-            Rectangle().fill(board.color)
+            RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS)
+                .fill(.clear)
+                .stroke(board.color, lineWidth: 3)
+                //.shadow(radius: DEFAULT_SHADOW_RADIUS)
             VStack {
                 HStack {
                     Text(board.title).font(.title).multilineTextAlignment(.leading).lineLimit(1).bold()
@@ -300,11 +325,15 @@ struct GrossipView: View {
                     Text(board.user.name).font(.title2).multilineTextAlignment(.trailing).lineLimit(1)
                 }.padding([.leading, .horizontal], 10).offset(y: 13)
                 ZStack {
-                    RoundedRectangle(cornerRadius: 13).fill(.white.opacity(0.35))
+                    RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS * 0.8)
+                        .fill(.clear)
+                        .stroke(board.color, lineWidth: 2)
+                        //.shadow(radius: DEFAULT_SHADOW_RADIUS)
                     Text(board.content).font(.title3).multilineTextAlignment(.leading).padding(5)
                 }.padding(5)
             }
-        }.clipShape(RoundedRectangle(cornerRadius: 15))
+        }//.clipShape(RoundedRectangle(cornerRadius: DEFAULT_CORNER_RADIUS))
+        .padding(2)
     }
     
     

@@ -63,8 +63,8 @@
 				03E32C9E2BCFF52B009E8F69 /* ContentView.swift */,
 				03C195392BD38B2C00760FAA /* PreferenceView.swift */,
 				037F16D72BD92FB90083E058 /* ImagePickerView.swift */,
-				03E030172BD1967100DA8BD4 /* AdviceView.swift */,
 				03778EA52BD16CDB00FC7A4A /* GrossipView.swift */,
+				03E030172BD1967100DA8BD4 /* AdviceView.swift */,
 				03E32CA02BCFF52E009E8F69 /* Assets.xcassets */,
 				03E32CA22BCFF52E009E8F69 /* Preview Content */,
 			);
